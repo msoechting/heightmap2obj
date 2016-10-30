@@ -2,6 +2,7 @@
 #include <windows.h>
 #include "lodepng.h"
 #include <vector>
+#include <ctime>
 #include "obj.h"
 #include "hmap2obj.h"
 
@@ -21,12 +22,16 @@ string ExtractName(string path) {
 int main(int argc, char** argv)
 {
 	if (argc != 5) {
-		cout << "Usage: hmap2obj <input png path> <width> <height> <output obj name>" << endl;
+		cout << "Usage: hmap2obj <input png path> <width> <height> <output obj path>" << endl;
 		cout << "Example: hmap2obj map.png 640 640 map.obj" << endl;
 		return -1;
 	}
 
-	cout << "Decoding input image..." << endl;
+	std::clock_t start;
+	double duration;
+
+	cout << "Decoding input image...";
+	start = std::clock();
 	string filename = argv[1];
 	string path = ExtractPath(argv[0]);
 	string fullpath = path + filename;
@@ -39,8 +44,11 @@ int main(int argc, char** argv)
 		cout << "Decoder error: " << error << ": " << lodepng_error_text(error) << endl;
 		return -1;
 	}
-
-	cout << "Creating vertices..." << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "done. (" << duration << "s)" << endl;
+	
+	start = std::clock();
+	cout << "Creating vertices...";
 	obj *O;
 	O = obj_create(nullptr);
 	float coords[] = { 0.0f, 0.0f, 0.0f };
@@ -52,10 +60,13 @@ int main(int argc, char** argv)
 		coords[2] = i / w;
 		obj_set_vert_v(O, v, coords);
 	}
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "done. (" << duration << "s)" << endl;
 
+	cout << "Creating polygons...";
+	start = std::clock();
 	int surface = obj_add_surf(O);
 	int vertices[] = { 0, 0, 0 };
-	cout << "Creating polygons..." << endl;
 	for (int y = 0; y < h - 1; y++) {
 		for (int x = 0; x < w - 1; x++) {
 			int p1 = obj_add_poly(O, surface);
@@ -70,10 +81,14 @@ int main(int argc, char** argv)
 			obj_set_poly(O, surface, p2, vertices);
 		}
 	}
-	cout << "Writing obj file..." << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "done. (" << duration << "s)" << endl;
+
+	cout << "Writing obj file...";
+	start = std::clock();
 	string objpath = path + argv[4];
 	obj_write(O, objpath.c_str(), nullptr, precision);
-	cout << "Done!" << endl;
+	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
+	cout << "done. (" << duration << "s)" << endl;
     return 0;
 }
-
