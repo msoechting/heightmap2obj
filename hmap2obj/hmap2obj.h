@@ -2,4 +2,4 @@
 
 int main(int argc, char ** argv);
 
-const float MAX_HEIGHT = 16.0f;
+const float MAX_ELEVATION = 16.0f;

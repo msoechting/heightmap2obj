@@ -21,9 +21,9 @@ string ExtractName(string path) {
 
 int main(int argc, char** argv)
 {
-	if (argc != 5) {
-		cout << "Usage: hmap2obj <input png path> <width> <height> <output obj path>" << endl;
-		cout << "Example: hmap2obj map.png 640 640 map.obj" << endl;
+	if (argc != 7) {
+		cout << "Usage: hmap2obj <input png path> <inputwidth> <inputheight> <output obj path> <outputwidth> <outputheight>" << endl;
+		cout << "Example: hmap2obj map.png 640 640 map.obj 16 16 32" << endl;
 		return -1;
 	}
 
@@ -38,6 +38,8 @@ int main(int argc, char** argv)
 	int precision = 5;
 	unsigned int w = atoi(argv[2]);
 	unsigned int h = atoi(argv[3]);
+	unsigned int modelWidth = atoi(argv[5]);
+	unsigned int modelHeight = atoi(argv[6]);
 	vector<unsigned char> data;
 	unsigned int error = lodepng::decode(data, w, h, fullpath, LCT_GREY, 8U);
 	if (error) {
@@ -55,9 +57,9 @@ int main(int argc, char** argv)
 	//#pragma omp parallel for
 	for (int i = 0; i < data.size(); i++) {
 		int v = obj_add_vert(O);
-		coords[0] = i % w;
-		coords[1] = data[i] / 255.f * MAX_HEIGHT;
-		coords[2] = i / w;
+		coords[0] = (i % w) / (float) w * modelWidth;
+		coords[1] = data[i] / 255.f * MAX_ELEVATION;
+		coords[2] = (i / w) / (float) h * modelHeight;
 		obj_set_vert_v(O, v, coords);
 	}
 	duration = (clock() - start) / (double)CLOCKS_PER_SEC;
