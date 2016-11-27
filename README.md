@@ -1,4 +1,4 @@
-# hmap2obj
+# heightmap2obj
 A clean and simple C++ CLI tool that converts a greyscale heightmap to a 3D OBJ model. Uses [lodepng](https://github.com/lvandeve/lodepng) and [obj](https://github.com/rlk/obj).
 
 ## example
